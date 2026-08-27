@@ -1,3 +1,10 @@
+"""Read-only helpers for encrypted KakaoTalk v2 database snapshots.
+
+The SQLCipher layout investigation was inspired by
+https://github.com/is-theo/kakao-cli-win. This module independently implements
+a RAM-only, no-key-export path; see THIRD_PARTY_NOTICES.md.
+"""
+
 from __future__ import annotations
 
 import sqlite3

@@ -1,3 +1,10 @@
+"""Stable message fingerprints and snapshot hashes.
+
+The baseline and fingerprinting approach was inspired by
+https://github.com/johklo/moltbot. This implementation is original and scoped
+to bounded local state; see THIRD_PARTY_NOTICES.md.
+"""
+
 from __future__ import annotations
 
 import hashlib

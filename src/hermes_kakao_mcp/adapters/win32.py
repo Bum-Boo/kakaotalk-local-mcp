@@ -1,3 +1,10 @@
+"""Fail-closed Win32 adapter.
+
+Window discovery and clipboard-based transcript access were inspired by
+https://github.com/kronenz/kakaotalk-mcp. This module is an original,
+narrower implementation; see THIRD_PARTY_NOTICES.md for the reviewed revision.
+"""
+
 from __future__ import annotations
 
 import ctypes

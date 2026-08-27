@@ -1,3 +1,10 @@
+"""Bounded local state for events, operations, and schedule candidates.
+
+Opaque local room IDs and fail-closed state boundaries were inspired by
+https://github.com/channprj/kmsg. This module is an original implementation;
+see THIRD_PARTY_NOTICES.md for attribution details.
+"""
+
 from __future__ import annotations
 
 import json

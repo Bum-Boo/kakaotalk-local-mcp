@@ -1,3 +1,11 @@
+"""Version-gated KakaoTalk v2 backend collector.
+
+The initial format research was inspired by
+https://github.com/is-theo/kakao-cli-win. This collector is independently
+implemented with narrower RAM-only and fail-closed constraints; see
+THIRD_PARTY_NOTICES.md.
+"""
+
 from __future__ import annotations
 
 import ctypes
