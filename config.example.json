@@ -1,0 +1,17 @@
+{
+  "adapter": "win32",
+  "send_enabled": false,
+  "auto_reply_enabled": false,
+  "schedule_automation_enabled": false,
+  "max_message_chars": 500,
+  "operation_ttl_seconds": 60,
+  "readback_delay_seconds": 1.0,
+  "watch_interval_seconds": 8.0,
+  "event_retention_minutes": 60,
+  "schedule_candidate_retention_minutes": 10080,
+  "state_path": "state/hermes-kakao.sqlite3",
+  "backend_collector": null,
+  "rooms": [],
+  "mock_transcripts": {},
+  "webhook": null
+}
