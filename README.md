@@ -1,3 +1,5 @@
+**한국어** | [English](docs/README.en.md) | [日本語](docs/README.ja.md) | [中文](docs/README.zh-CN.md)
+
 # KakaoTalk Local MCP
 
 [![CI](https://github.com/Bum-Boo/kakaotalk-local-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Bum-Boo/kakaotalk-local-mcp/actions/workflows/ci.yml)
