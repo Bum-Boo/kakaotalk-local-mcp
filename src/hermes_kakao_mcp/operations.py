@@ -6,7 +6,7 @@ import threading
 import time
 from dataclasses import dataclass
 
-from .errors import ApprovalError
+from .errors import ApprovalError, ConflictError
 from .fingerprint import text_hash
 
 
@@ -69,12 +69,22 @@ class OperationStore:
         with self._lock:
             self._purge()
             idempotency_hash = opaque_hash(idempotency_key)
+            draft_hash = text_hash(text)
             existing_id = self._idempotency.get(idempotency_hash)
             if existing_id:
-                return self._operations[existing_id]
+                existing = self._operations[existing_id]
+                if (
+                    existing.room_id != room_id
+                    or existing.expected_fingerprint != expected_fingerprint
+                    or existing.text_hash != draft_hash
+                ):
+                    raise ConflictError(
+                        "idempotency_conflict",
+                        "Idempotency key is already bound to a different room, transcript, or draft",
+                    )
+                return existing
 
             operation_id = secrets.token_urlsafe(24)
-            draft_hash = text_hash(text)
             confirmation_code = opaque_hash(f"{operation_id}:{draft_hash}")[:8].upper()
             now = time.time()
             operation = PreparedOperation(
