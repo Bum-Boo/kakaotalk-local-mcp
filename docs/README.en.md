@@ -8,6 +8,23 @@
 
 An **unofficial, local-first bridge** connecting the KakaoTalk PC app for Windows to a local MCP client. It handles only chat rooms that the user has explicitly allowed, and message sending and automatic replies are disabled by default.
 
+## Example
+
+Once it is connected to Claude Desktop, a session looks like this. Only the `room_id` you chose (`family` here) is exposed, never the real room title.
+
+```text
+You     Anything new in the family chat?
+Claude  [kakao_read_room family] 2 recent messages
+        Mom: Dinner together Saturday at 6?
+        Dad: The place in front of our building
+You     Reply "Sounds good, I'll be there"
+Claude  [kakao_prepare_reply] Send this to family?
+You     Yes, send it
+Claude  [kakao_commit_reply] Sent once and confirmed by reading the room again.
+```
+
+Sending only works after you turn on `send_enabled` in the config. Otherwise it is read-only.
+
 > [!WARNING]
 > This project is not affiliated with Kakao Corp. and is not an official Kakao product. KakaoTalk updates may break its functionality. Before use, review the KakaoTalk Terms of Service and applicable laws yourself.
 
