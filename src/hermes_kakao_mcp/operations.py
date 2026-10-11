@@ -52,7 +52,7 @@ class OperationStore:
         expired = [
             operation_id
             for operation_id, operation in self._operations.items()
-            if operation.expires_at < now and operation.status == "prepared"
+            if operation.expires_at < now and operation.status in {"prepared", "expired"}
         ]
         for operation_id in expired:
             operation = self._operations.pop(operation_id)
@@ -108,7 +108,10 @@ class OperationStore:
             if operation is None:
                 raise ApprovalError("operation_not_found", "Prepared operation was not found or expired")
             if operation.expires_at < time.time():
-                operation.status = "expired"
+                # Expiry permits a new approval only for an unsent draft. Keep
+                # terminal outcomes so their idempotency protection survives.
+                if operation.status == "prepared":
+                    operation.status = "expired"
                 raise ApprovalError("operation_expired", "Prepared operation has expired")
             if operation.status not in {"prepared", "sent_verified", "sent_unverified"}:
                 raise ApprovalError("operation_not_pending", "Prepared operation is no longer pending")
