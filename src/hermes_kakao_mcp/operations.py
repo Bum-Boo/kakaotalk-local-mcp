@@ -6,7 +6,7 @@ import threading
 import time
 from dataclasses import dataclass
 
-from .errors import ApprovalError
+from .errors import ApprovalError, ConflictError
 from .fingerprint import text_hash
 
 
@@ -52,7 +52,7 @@ class OperationStore:
         expired = [
             operation_id
             for operation_id, operation in self._operations.items()
-            if operation.expires_at < now and operation.status == "prepared"
+            if operation.expires_at < now and operation.status in {"prepared", "expired"}
         ]
         for operation_id in expired:
             operation = self._operations.pop(operation_id)
@@ -69,12 +69,22 @@ class OperationStore:
         with self._lock:
             self._purge()
             idempotency_hash = opaque_hash(idempotency_key)
+            draft_hash = text_hash(text)
             existing_id = self._idempotency.get(idempotency_hash)
             if existing_id:
-                return self._operations[existing_id]
+                existing = self._operations[existing_id]
+                if (
+                    existing.room_id != room_id
+                    or existing.expected_fingerprint != expected_fingerprint
+                    or existing.text_hash != draft_hash
+                ):
+                    raise ConflictError(
+                        "idempotency_conflict",
+                        "Idempotency key is already bound to a different room, transcript, or draft",
+                    )
+                return existing
 
             operation_id = secrets.token_urlsafe(24)
-            draft_hash = text_hash(text)
             confirmation_code = opaque_hash(f"{operation_id}:{draft_hash}")[:8].upper()
             now = time.time()
             operation = PreparedOperation(
@@ -98,7 +108,10 @@ class OperationStore:
             if operation is None:
                 raise ApprovalError("operation_not_found", "Prepared operation was not found or expired")
             if operation.expires_at < time.time():
-                operation.status = "expired"
+                # Expiry permits a new approval only for an unsent draft. Keep
+                # terminal outcomes so their idempotency protection survives.
+                if operation.status == "prepared":
+                    operation.status = "expired"
                 raise ApprovalError("operation_expired", "Prepared operation has expired")
             if operation.status not in {"prepared", "sent_verified", "sent_unverified"}:
                 raise ApprovalError("operation_not_pending", "Prepared operation is no longer pending")
